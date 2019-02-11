@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="users.js"></script>
+	<title>Crud Usuarios</title>
+
+	<style>
+
+	body
+	{
+		background-color: lavender;
+	}
+	#form
+	{
+		text-align: center;
+		background-color: rgba(221, 183, 255, 0.5);
+
+		padding: 5px;
+		margin-left: auto;
+		margin-right: auto;
+		width: 500px;
+	}
+
+	#Formacion
+	{
+		text-align: center;
+		background-color: rgba(221, 183, 255, 0.5);
+
+		padding: 5px;
+		margin-left: auto;
+		margin-right: auto;
+		width: 500px;
+		margin-top: inherit;
+	}
+
+	h1
+	{
+		margin-top: 10%;
+		text-align: center;
+	}
+
+	.respuesta
+	{
+		text-align: center;
+		background-color: rgba(221, 183, 255, 0.5);
+
+		padding: 5px;
+		margin-left: auto;
+		margin-right: auto;
+		width: 200px;
+	}
+
+	.tabla
+	{
+		text-align: center;
+		background-color: rgba(221, 183, 255, 0.5);
+
+		margin-left: auto;
+		margin-right: auto;
+		padding: 10px;
+		color:white;
+	}
+
+	.btn
+	{
+		text-align: center;
+
+		padding: 5px;
+		margin-left: auto;
+		margin-right: auto;
+	}	
+
+	.error
+	{
+		text-align: center;
+		background-color: rgba(221, 183, 255, 0.5);
+
+		padding: 5px;
+		margin-left: auto;
+		margin-right: auto;
+		width: 200px;
+		color:white;
+	}
+</style>
+</head>
+<body>
+
+	<h1>Administracion</h1>
+
+	<div id="form">
+		<h3>Crud Usuarios</h3>
+		<input type="name" id="name" placeholder="usuarioNombre">
+		<br><br>
+		<input type="email" id="mail" placeholder="email">
+		<br><br>
+		<input id="password" type="name" placeholder="contrasena">
+		<br><br>
+		<input type="submit" id="user-submit" class="btn" value="Crear">
+		<br><br>
+	</div>
+
+	<div id="Formacion">
+		<input class="btn" id="listUsers" type="button" onclick="allUsers()" value="Mostrar Usuarios">
+	</div>
+
+	<div id="Formacion">
+		<input class="btn" type="button" onclick="CerrarSesion()" value="Cerrar Sesion">
+	</div>
+</body>
+
+<script type="text/javascript">
+
+	if(!localStorage.getItem("Authorization"))
+	{
+		window.location = "http://localhost:8888/SitiosVisitados/ClienteWeb/login.html";
+	}
+
+	function allUsers(){
+
+		var Authorization = localStorage.getItem("Authorization"); 
+		$(".error").remove();
+		$("#tabla").remove();
+		$.ajax({
+		 	method: "GET",
+		 	url: "http://localhost:8888/SitiosVisitados/public/index.php/api/usuarios",
+		 	headers:
+		 	{
+		 		"Authorization" : Authorization 
+		 	},
+		 	success: function(response){
+				
+				var response = jQuery.parseJSON(response);
+				if(document.getElementById("tabla") == null)
+				{
+					$('<table id="tabla"/>').html("").appendTo('#Formacion');
+					$('<th id="filaNombre" class="respuesta"/>').html("Usuario").appendTo('#tabla');
+					$('<th id="filaEmail" class="respuesta"/>').html("Email").appendTo('#tabla');
+					$('<th id="filaEditar" class="respuesta"/>').html("Editar").appendTo('#tabla');
+					$('<th id="filaBorrar" class="respuesta"/>').html("Borrar").appendTo('#tabla');
+				}
+				
+				for (i = 0; i < response.data.length; i++) {
+					//AQUI VA EL NOMBREEEE
+				  	$('<div/><br>').html(response.data[i].nombre).appendTo('#filaNombre');
+				  	//AQUI EL EMAILLLLL
+				  	$('<div/><br>').html(response.data[i].email).appendTo('#filaEmail');
+				  	//AQUI EDITAMOOOOOOS
+				  	$('<br>').html("").appendTo('#filaEditar');
+				  	$('<input id="name" type="text"  class="editName" placeholder="Nuevo Nombre">').html("").appendTo('#filaEditar').attr("id", response.data[i].id + "Name");
+				  	$('<input id="email" type="email"  class="editEmail" placeholder="Nuevo Email">').html("").appendTo('#filaEditar').attr("id", response.data[i].id + "Email");
+				  	$('<input id="password" type="password"  class="editPasword" placeholder="Nuevo password">').html("").appendTo('#filaEditar').attr("id", response.data[i].id + "Password");
+				  	$('<input type="button" class="btn" onclick="EditUser(this)" value="Editar">').html("").appendTo('#filaEditar').attr("id", response.data[i].id);
+				  	$('<br>').html("").appendTo('#filaEditar');
+				  	//AQUI BORRAMOOOOS
+				  	$('<br><input type="button" onclick="Delete(this)" class="btn" value="Borrar"><br>').html("").appendTo('#filaBorrar').attr("id", response.data[i].id);
+				};
+		 	},
+		
+		 	error: function(response){
+		 		var response = jQuery.parseJSON(response.responseText);
+		 		$('<div class="error"/>').html(response.message).appendTo('body');
+		 	}
+		});
+	}
+
+	function EditUser(button){
+		var Authorization = localStorage.getItem("Authorization");
+		var name = document.getElementById(button.id + "Name");
+		var email = document.getElementById(button.id + "Email");
+		var password = document.getElementById(button.id + "Password");
+		$(".error").remove();
+		console.log(button.id);
+		console.log(name.value);
+		console.log(email.value);
+		console.log(password.value);
+    	$.ajax({
+		 	method: "PUT",
+		 	url: "http://localhost:8888/SitiosVisitados/public/index.php/api/usuarios/" + button.id,
+		 	headers:
+		 	{
+		 		"Authorization" : Authorization 
+		 	},
+		 	data: { 
+		 		newName: name.value,
+		 		newEmail: email.value,
+		 		newPassword: password.value,
+		 		"_method" : "PUT" 
+		 	},
+		 	success: function(response){
+		 		var response = jQuery.parseJSON(response);
+		 		$('<div class="error"/>').html(response.message).appendTo('#Formacion');
+		 		allUsers();
+		 	},
+		
+		 	error: function(response){
+		 	 	var response = jQuery.parseJSON(response.responseText);
+		 	 	$('<div class="error"/>').html(response.message).appendTo('#Formacion');
+		 	}
+		});
+	}
+
+	function Delete(button) {
+		var Authorization = localStorage.getItem("Authorization");
+		$(".error").remove(); 
+		$.ajax({
+		 	method: "DELETE",
+		 	url: "http://localhost:8888/SitiosVisitados/public/index.php/api/usuarios/" + button.id,
+		 	headers:
+		 	{
+		 		"Authorization" : Authorization 
+		 	},
+		 	success: function(response){
+		 		var response = jQuery.parseJSON(response);
+		 		$('<div class="error"/>').html(response.message).appendTo('#Formacion');
+		 		allUsers();
+		 	},
+		
+		 	error: function(response){
+		 	 	var response = jQuery.parseJSON(response.responseText);
+		 	 	$('<div class="error"/>').html(response.message).appendTo('#Formacion');
+		 	 	allUsers();
+		 	}
+		});		
+	}
+
+	function CerrarSesion()
+	{
+		console.log("CerrarSesion");
+		localStorage.clear();
+		window.location = "http://localhost:8888/SitiosVisitados/ClienteWeb/login.html";  
+	}
+</script>
+</html>

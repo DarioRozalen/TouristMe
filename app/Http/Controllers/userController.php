@@ -10,8 +10,7 @@ class userController extends Controller
     {
         if ($this->checkLogin()) 
         { 
-            $usuarioData = $this->getUsuarioData();
-            $usuariosCSave = $this->allUsuariosOneUsuario($usuarioData->id);
+            $usuariosCSave = Usuario::all();
 
             if (count($usuariosCSave) < 1)
             {
@@ -22,15 +21,15 @@ class userController extends Controller
         }
         else
         {
-            return $this->error(400, "Acceso denegado");
+            return $this->error(400, "Acceso denegado en el index");
         }    
     }
     
     public function store(Request $request)
     {
+
         if ($this->checkLogin()) 
         { 
-
             if (!$request->filled("usuarioNombre") or !$request->filled("email") or !$request->filled("contrasena"))
             {
                 return $this-> error(400, "Campos vacios");
@@ -48,17 +47,41 @@ class userController extends Controller
         }
         else
         {
-            return $this->error(400, "Acceso denegado");
+            return $this->error(400, "adios");
         }    
     }
+    public function crearUsuario(Request $request)
+    {
 
+        if ($this->checkLogin()) 
+        { 
+            if (!$request->filled("usuarioNombre") or !$request->filled("email") or !$request->filled("contrasena"))
+            {
+                return $this-> error(400, "Campos vacios");
+            }
+
+            $usuarioData = $this->getUsuarioData();
+            $this->isUsedUsuarioNombre($request->usuarioNombre,$usuarioData->id);
+            $usuario = new Usuario();
+            $usuario->nombre = $request->usuarioNombre;
+            $usuario->email = $request->email;
+            $usuario->contrasena = $request->contrasena;
+            $usuario->id_rol = $usuarioData->id;
+            $usuario->save();
+            return $this->success('usuario creado', $request->usuarioNombre);
+        }
+        else
+        {
+            return $this->error(400, "adios");
+        }    
+    }
     public function show($usuarioNombre)
     {
         if ($this->checkLogin()) 
         {
             if(is_null($usuarioNombre))
             {
-                return $this->error(400, "El nombre del usuario tiene que estar rellenado");
+                return $this->error(400, "El nombre es necesario");
             }
             $usuarioData = $this->getUsuarioData();
             $usuarioSave = $this->oneUsuarioOfUsuario($usuarioData->id,$usuarioNombre);
@@ -72,28 +95,31 @@ class userController extends Controller
 
     public function update(Request $request, $id)
     {
-        if ($this->checkLoginAdmin()) 
+        if ($this->checkLogin()) 
         { 
             $infoToken = $this->getUsuarioData();
 
-            if(is_null($newName))
-            {
-                $newName = $infoToken->nombre;
-            }
-            if(is_null($newEmail))
-            {
-                $newEmail = $infoToken->email;
-            }
-            if(is_null($newContrasena))
-            {
-                $newContrasena = $infoToken->contrasena;
-            }
+            $newName = $request->newName;
+            $newEmail = $request->newEmail;
+            $newContrasena = $request->newContrasena;
+
             $usuarioSave = Usuario::where('id',$id)->first();
-            $usuarioSave->nombre = $request->nombre;
-            $usuarioSave->email = $request->email;
-            $usuarioSave->contrasena = $request->contrasena;
+
+            if(!is_null($newName))
+            {
+                $usuarioSave->nombre = $newName;
+            }
+            if(!is_null($newEmail))
+            {
+                $usuarioSave->email = $newEmail;
+            }
+            if(!is_null($newContrasena))
+            {
+                $usuarioSave->contrasena = $newContrasena;
+            }
 
             $usuarioSave->save();
+            
             return $this->success('Usuario modificada', $usuarioSave);
         }
         else
@@ -101,13 +127,13 @@ class userController extends Controller
             return $this->error(400, "Acceso denegado");
         }
     }
-   
-    public function destroy($usuario)
+    
+    public function destroy($id)
     {
         if ($this->checkLogin()) 
         { 
-            $usuarioNombre = $usuario;
-            $usuarioSave = Usuario::where('nombre',$usuarioNombre)->first();
+            $usuarioNombre = $id;
+            $usuarioSave = Usuario::where('id',$usuarioNombre)->first();
             $usuarioSave->delete();
             return $this->success('eliminado usuario', "");
         }
@@ -122,7 +148,7 @@ class userController extends Controller
         $usuariosCSave = $this->allUsuariosOneUsuario($id_rol);
         foreach ($usuariosCSave as $Usuario => $UsuarioSave) 
         {
-            if($UsuarioSave->nombre == $usuarioNombre)
+            if($UsuarioSave->email == $usuarioNombre)
             {
                 exit($this->error(400,'El nombre del usuario ya existe'));
             }  
@@ -143,6 +169,6 @@ class userController extends Controller
                 return $categorie;
             }
         }
-        exit($this->error(400,'Este usuario no existe, introduce una que ya exista'));
+        exit($this->error(400,'Este usuario no existe, introduce otro que ya exista'));
     }
 }

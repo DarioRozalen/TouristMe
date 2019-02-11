@@ -23,10 +23,12 @@ class LoginController extends Controller
                 'id' => $usuarioSave->id,
                 'nombre' => $usuarioSave->nombre,
                 'email' => $usuarioSave->email,
-                'contrasena' => $usuarioSave->contrasena
+                'contrasena' => $usuarioSave->contrasena,
+                'id_rol' => $usuarioSave->id_rol,
+
             );
             $token = JWT::encode($usuarioData, $this->key);
-            return $this->success('Usuario Logeado', $token);
+            return response($token);
         }
         else
         {

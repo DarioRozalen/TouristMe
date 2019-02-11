@@ -14,7 +14,6 @@ class RegisterController extends Controller
         }
 
         $usuario = $this->deleteSpace($_POST['nombre']); 
-        //$usuario = $_POST['nombre'];
         $email = $_POST['email'];
         $contrasena = $_POST['contrasena'];
         if($this->checkPassword($contrasena))
@@ -29,7 +28,7 @@ class RegisterController extends Controller
         {
             return $this->error(415,'El usuario ya existe');
         }
-     
+        
         if (!empty($usuario) && !empty($email) && !empty($contrasena))
         {
             $usuarios = new Usuario();

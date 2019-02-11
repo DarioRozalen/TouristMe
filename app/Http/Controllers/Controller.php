@@ -57,21 +57,26 @@ class Controller extends BaseController
             return null;
         }	
     }
-	protected function checkLogin()
+
+    protected function checkLogin()
     {
     	$usuarioData = $this->getUsuarioData();
         if(is_null($usuarioData))
         {
             return false;
         }
+
         $usuarioSave = Usuario::where('email', $usuarioData->email)->first();
-		
-        if(!is_null($usuarioSave) && $usuarioSave->contrasena == $usuarioData->contrasena)
+        
+        if(!is_null($usuarioSave) && $usuarioSave->contrasena == $usuarioData->contrasena && $usuarioSave->id_rol == 0)
         {
             return true;
+        }if(!is_null($usuarioSave) && $usuarioSave->contrasena == $usuarioData->contrasena && $usuarioSave->id_rol == 1)
+        {
+            return false;
         }
-        return false;
-    }   
+    } 
+
 
     protected function deleteSpace($string)
     {
