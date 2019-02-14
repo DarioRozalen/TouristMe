@@ -2,7 +2,7 @@
 <html>
 <head>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-	<script src="users.js"></script>
+	<!-- <script src="users.js"></script> -->
 	<title>Crud Usuarios</title>
 
 	<style>
@@ -151,13 +151,13 @@
 		$("#tabla").remove();
 		
 		$.ajax({
-		 	method: "GET",
-		 	url: "http://localhost:8888/SitiosVisitados/public/index.php/api/usuarios",
-		 	headers:
-		 	{
-		 		"Authorization" : Authorization 
-		 	},
-		 	success: function(response){
+			method: "GET",
+			url: "http://localhost:8888/SitiosVisitados/public/index.php/api/usuarios",
+			headers:
+			{
+				"Authorization" : Authorization 
+			},
+			success: function(response){
 				
 				var response = jQuery.parseJSON(response);
 				if(document.getElementById("tabla") == null)
@@ -169,9 +169,9 @@
 					$('<th id="filaBorrar" class="respuesta"/>').html("Borrar").appendTo('#tabla');
 				}
 				
-				for (i = 0; i < response.data.length; i++) {
+				for (i = 1; i < response.data.length; i++) {
 					//AQUI VA EL NOMBREEEE
-				  	$('<div/><br>').html(response.data[i].nombre).appendTo('#filaNombre');
+					$('<div/><br>').html(response.data[i].nombre).appendTo('#filaNombre');
 				  	//AQUI EL EMAILLLLL
 				  	$('<div/><br>').html(response.data[i].email).appendTo('#filaEmail');
 				  	//AQUI EDITAMOOOOOOS
@@ -183,15 +183,15 @@
 				  	$('<br>').html("").appendTo('#filaEditar');
 				  	//AQUI BORRAMOOOOS
 				  	$('<br><input type="button" onclick="Delete(this)" class="btn" value="Borrar"><br>').html("").appendTo('#filaBorrar').attr("id", response.data[i].id);
-				};
-		 	},
-		
-		 	error: function(response){
-		 		var response = jQuery.parseJSON(response.responseText);
-		 		$('<div class="error"/>').html(response.message).appendTo('body');
-		 		console.log(response);
-		 	}
-		});
+				  };
+				},
+
+				error: function(response){
+					var response = jQuery.parseJSON(response.responseText);
+					$('<div class="error"/>').html(response.message).appendTo('body');
+					console.log(response);
+				}
+			});
 	}
 
 	function EditUser(button){
@@ -201,30 +201,30 @@
 		var password = document.getElementById(button.id + "Password");
 		$(".error").remove();
 
-    	$.ajax({
-		 	method: "PUT",
-		 	url: "http://localhost:8888/SitiosVisitados/public/index.php/api/usuarios/" + button.id,
-		 	headers:
-		 	{
-		 		"Authorization" : Authorization 
-		 	},
-		 	data: { 
-		 		newName: name.value,
-		 		newEmail: email.value,
-		 		newContrasena: password.value,
-		 		"_method" : "PUT" 
-		 	},
-		 	success: function(response){
-		 		var response = jQuery.parseJSON(response);
-		 		$('<div class="error"/>').html(response.message).appendTo('#Formacion');
-		 		allUsers();
-		 	},
-		
-		 	error: function(response){
-		 		console.log(response.responseText);
-		 	 	var response = jQuery.parseJSON(response.responseText);
+		$.ajax({
+			method: "PUT",
+			url: "http://localhost:8888/SitiosVisitados/public/index.php/api/usuarios/" + button.id,
+			headers:
+			{
+				"Authorization" : Authorization 
+			},
+			data: { 
+				newName: name.value,
+				newEmail: email.value,
+				newContrasena: password.value,
+				"_method" : "PUT" 
+			},
+			success: function(response){
+				var response1 = jQuery.parseJSON(response);
+				$('<div class="error"/>').html(response1.message).appendTo('#cajaShow');
+				allUsers();
+			},
+
+			error: function(response){
+				console.log(response.responseText);
+				var response = jQuery.parseJSON(response.responseText);
 				$('<div class="error"/>').html(response.message).appendTo('#cajaShow');
-		 	}
+			}
 		});
 	}
 
@@ -232,54 +232,56 @@
 		var Authorization = localStorage.getItem("Authorization");
 		$(".error").remove(); 
 		$.ajax({
-		 	method: "DELETE",
-		 	url: "http://localhost:8888/SitiosVisitados/public/index.php/api/usuarios/" + button.id,
-		 	headers:
-		 	{
-		 		"Authorization" : Authorization 
-		 	},
-		 	success: function(response){
-		 		var response = jQuery.parseJSON(response);
-		 		$('<div class="error"/>').html(response.message).appendTo('#Formacion');
-		 		allUsers();
-		 	},
-		
-		 	error: function(response){
-		 	 	var response = jQuery.parseJSON(response.responseText);
-		 	 	$('<div class="error"/>').html(response.message).appendTo('#Formacion');
-		 	 	allUsers();
-		 	}
+			method: "DELETE",
+			url: "http://localhost:8888/SitiosVisitados/public/index.php/api/usuarios/" + button.id,
+			headers:
+			{
+				"Authorization" : Authorization 
+			},
+			success: function(response){
+				var response = jQuery.parseJSON(response);
+				$('<div class="error"/>').html(response.message).appendTo('#Formacion');
+				allUsers();
+			},
+
+			error: function(response){
+				var response = jQuery.parseJSON(response.responseText);
+				$('<div class="error"/>').html(response.message).appendTo('#Formacion');
+				allUsers();
+			}
 		});		
 	}
 
 	function crear()
 	{
 		$(".error").remove();
-	    var usuarioNombre = $('#name').val();
-	    var email = $('#mail').val();
-	    var contrasena = $('#password').val();
-	    var token = localStorage.getItem("Authorization"); 
-	    console.log(token);
-	    $.ajax({
-	     type: "POST",
-	     url: "http://localhost:8888/SitiosVisitados/public/index.php/api/crearuser",
-	     headers: {
-	      Authorization: token
-	    },
-	    data: {
-	     "usuarioNombre": usuarioNombre,
-	     "email": email,
-	     "contrasena": contrasena
-	   },
-	   success: function(data, text, done){
-	    console.log(data);
-	    },
-	    error: function(response){
-	    	
-			var response = jQuery.parseJSON(response.responseText);
-			$('<div class="error"/>').html(response.message).appendTo('#cajaCrear');
+		var usuarioNombre = $('#name').val();
+		var email = $('#mail').val();
+		var contrasena = $('#password').val();
+		var token = localStorage.getItem("Authorization"); 
+		console.log(token);
+		$.ajax({
+			type: "POST",
+			url: "http://localhost:8888/SitiosVisitados/public/index.php/api/crearuser",
+			headers: {
+				Authorization: token
+			},
+			data: {
+				"usuarioNombre": usuarioNombre,
+				"email": email,
+				"contrasena": contrasena
+			},
+			success: function(data, text, done){
+				var response = jQuery.parseJSON(data);
+				$('<div class="error"/>').html(response.message).appendTo('#cajaCrear');
+				console.log(data);
+			},
+			error: function(response){
+
+				var response = jQuery.parseJSON(response.responseText);
+				$('<div class="error"/>').html(response.message).appendTo('#cajaCrear');
 			}
-	    });
+		});
 	}
 
 	function CerrarSesion()

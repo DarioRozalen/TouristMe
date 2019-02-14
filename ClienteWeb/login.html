@@ -24,7 +24,7 @@
 		text-align: center;
 	}
 
-	.caja
+	.cajaCrear
 	{
 		text-align: center;
 		background-color: rgba(221, 183, 255, 0.5);
@@ -49,23 +49,26 @@
 		margin-right: auto;
 		margin-top: 10px;
 	}	
-	.fail
+
+	.error
 	{
 		text-align: center;
-		background-color: rgba(204, 127, 126, 0.5);
+		background-color: rgba(221, 183, 255, 0.5);
+
 		padding: 5px;
 		margin-left: auto;
 		margin-right: auto;
 		width: 200px;
 		color:white;
 	}
+
 </style>
 </head>
 <body>
 	
 	<center>
 		<h1 class="cajaLogin">Login</h1>
-		<div class="caja" id="caja" >
+		<div class="cajaCrear" id="cajaCrear" >
 			<h2>Email</h2>
 			<input  id="emails" type="email" name="email">
 			<br>
@@ -75,13 +78,12 @@
 			<button class="btn" id="boton" onclick="log()"> Enviar </button>
 		</div>
 	</center>
-	
-
 </body>
 
 <script type="text/javascript">
 
 	function log(){
+		$(".error").remove();
 
 		$.ajax({
 			method: "POST",
@@ -94,14 +96,11 @@
 			{
 				var response1 = jQuery.parseJSON(response);
 				var Authorization = localStorage.setItem('Authorization',response1.data);
-
-				
 				window.open("http://localhost:8888/SitiosVisitados/ClienteWeb/usuarios.html");
 			},
 			error:function(msg){
-				console.log(msg.responseText);
 				var response = jQuery.parseJSON(msg.responseText);
-				$('<div/>').html(response.message).appendTo('#caja');
+				$('<div class="error"/>').html(response.message).appendTo('#cajaCrear');
 			}
 		})	
 	}

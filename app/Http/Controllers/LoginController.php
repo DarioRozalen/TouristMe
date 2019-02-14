@@ -12,7 +12,7 @@ class LoginController extends Controller
             return $this->error(400, 'Campos incompletos');
         }
 
-        if (empty($_POST['email']) || empty($_POST['contrasena']))
+        if (empty($_POST['email']) and empty($_POST['contrasena']))
         {
 
             return $this->error(400,'No puede haber campos vacios');
