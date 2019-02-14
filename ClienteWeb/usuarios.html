@@ -51,6 +51,30 @@
 		width: 200px;
 	}
 
+	.cajaCrear
+	{
+		text-align: center;
+		background-color: rgba(221, 183, 255, 0.5);
+
+		padding: 5px;
+		margin-left: auto;
+		margin-right: auto;
+		width: 250px;
+		margin-top: inherit;
+	}
+
+	.cajaShow
+	{
+		text-align: center;
+		background-color: rgba(221, 183, 255, 0.5);
+
+		padding: 5px;
+		margin-left: auto;
+		margin-right: auto;
+		width: 250px;
+		margin-top: inherit;
+	}
+
 	.tabla
 	{
 		text-align: center;
@@ -89,19 +113,23 @@
 	<h1>Administracion</h1>
 
 	<div id="form">
-		<h3>Crud Usuarios</h3>
-		<input type="name" id="name" placeholder="usuarioNombre">
-		<br><br>
-		<input type="email" id="mail" placeholder="email">
-		<br><br>
-		<input id="password" type="name" placeholder="contrasena">
-		<br><br>
-		<input type="submit" id="user-submit" class="btn" value="Crear">
-		<br><br>
+		<div id="cajaCrear">
+			<h3>Crud Usuarios</h3>
+			<input type="name" id="name" placeholder="usuarioNombre">
+			<br><br>
+			<input type="email" id="mail" placeholder="email">
+			<br><br>
+			<input id="password" type="name" placeholder="contrasena">
+			<br><br>
+			<input type="submit" id="user-submit" onclick="crear()" class="btn" value="Crear">
+			<br><br>
+		</div>
 	</div>
 
 	<div id="Formacion">
-		<input class="btn" id="listUsers" type="button" onclick="allUsers()" value="Mostrar Usuarios">
+		<div id="cajaShow">
+			<input class="btn" id="listUsers" type="button" onclick="allUsers()" value="Mostrar Usuarios">
+		</div>
 	</div>
 
 	<div id="Formacion">
@@ -121,6 +149,7 @@
 		var Authorization = localStorage.getItem("Authorization"); 
 		$(".error").remove();
 		$("#tabla").remove();
+		
 		$.ajax({
 		 	method: "GET",
 		 	url: "http://localhost:8888/SitiosVisitados/public/index.php/api/usuarios",
@@ -160,6 +189,7 @@
 		 	error: function(response){
 		 		var response = jQuery.parseJSON(response.responseText);
 		 		$('<div class="error"/>').html(response.message).appendTo('body');
+		 		console.log(response);
 		 	}
 		});
 	}
@@ -170,10 +200,7 @@
 		var email = document.getElementById(button.id + "Email");
 		var password = document.getElementById(button.id + "Password");
 		$(".error").remove();
-		console.log(button.id);
-		console.log(name.value);
-		console.log(email.value);
-		console.log(password.value);
+
     	$.ajax({
 		 	method: "PUT",
 		 	url: "http://localhost:8888/SitiosVisitados/public/index.php/api/usuarios/" + button.id,
@@ -184,7 +211,7 @@
 		 	data: { 
 		 		newName: name.value,
 		 		newEmail: email.value,
-		 		newPassword: password.value,
+		 		newContrasena: password.value,
 		 		"_method" : "PUT" 
 		 	},
 		 	success: function(response){
@@ -194,8 +221,9 @@
 		 	},
 		
 		 	error: function(response){
+		 		console.log(response.responseText);
 		 	 	var response = jQuery.parseJSON(response.responseText);
-		 	 	$('<div class="error"/>').html(response.message).appendTo('#Formacion');
+				$('<div class="error"/>').html(response.message).appendTo('#cajaShow');
 		 	}
 		});
 	}
@@ -222,6 +250,36 @@
 		 	 	allUsers();
 		 	}
 		});		
+	}
+
+	function crear()
+	{
+		$(".error").remove();
+	    var usuarioNombre = $('#name').val();
+	    var email = $('#mail').val();
+	    var contrasena = $('#password').val();
+	    var token = localStorage.getItem("Authorization"); 
+	    console.log(token);
+	    $.ajax({
+	     type: "POST",
+	     url: "http://localhost:8888/SitiosVisitados/public/index.php/api/crearuser",
+	     headers: {
+	      Authorization: token
+	    },
+	    data: {
+	     "usuarioNombre": usuarioNombre,
+	     "email": email,
+	     "contrasena": contrasena
+	   },
+	   success: function(data, text, done){
+	    console.log(data);
+	    },
+	    error: function(response){
+	    	
+			var response = jQuery.parseJSON(response.responseText);
+			$('<div class="error"/>').html(response.message).appendTo('#cajaCrear');
+			}
+	    });
 	}
 
 	function CerrarSesion()

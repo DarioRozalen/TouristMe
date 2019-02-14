@@ -3,7 +3,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Lugares;
 use \Firebase\JWT\JWT;
-
 class LugaresController extends Controller
 {
     public function index()
@@ -12,12 +11,10 @@ class LugaresController extends Controller
         { 
             $usuarioData = $this->getUsuarioData();
             $lugaresSave = $this->allLugaresOneUsuario($usuarioData->id);
-
             if (count($lugaresSave) < 1)
             {
-            	return $this->success('No hay lugares todavia');
+                return $this->success('No hay lugares todavia');
             }
-
             return $this->success('Lista lugares creados: ', $lugaresSave);
         }
         else
@@ -30,12 +27,11 @@ class LugaresController extends Controller
     {
         if ($this->checkLogin()) 
         { 
-
-        	if (!$request->filled("lugarNombre") or !$request->filled("fechaInicio") or !$request->filled("fechaFin"))
-         {
+        if (!$request->filled("lugarNombre") or !$request->filled("fechaInicio") or !$request->filled("fechaFin"))
+        {
           return $this-> error(400, "Campos vacios");
-      }
-
+        }
+      $lugarNombre = $this->deleteSpace($_POST['lugarNombre']); 
       $usuarioData = $this->getUsuarioData();
       $this->isUsedLugarNombre($request->lugarNombre,$usuarioData->id);
       $lugar = new Lugares();
@@ -54,7 +50,6 @@ class LugaresController extends Controller
     return $this->error(400, "Acceso denegado");
 }    
 }
-
 public function show($lugarNombre)
 {
     if ($this->checkLogin()) 
@@ -72,7 +67,6 @@ public function show($lugarNombre)
         return $this->error(400, "Acceso denegado");
     } 
 }   
-
 public function update(Request $request, $lugar)
 {
     if ($this->checkLogin()) 
@@ -103,7 +97,6 @@ public function update(Request $request, $lugar)
         return $this->error(400, "Acceso denegado");
     }
 }
-
 public function destroy($lugar)
 {
     if ($this->checkLogin()) 
@@ -118,7 +111,6 @@ public function destroy($lugar)
         return $this->error(400, "Acceso denegado");
     }       
 }
-
 private function isUsedLugarNombre($lugarNombre,$id_usuario)
 {
     $lugaresSave = $this->allLugaresOneUsuario($id_usuario);
@@ -130,7 +122,6 @@ private function isUsedLugarNombre($lugarNombre,$id_usuario)
         }  
     }
 }
-
 private function allLugaresOneUsuario($id)
 {
     return Lugares::where('id_usuario', $id)->get();

@@ -65,7 +65,7 @@
 	
 	<center>
 		<h1 class="cajaLogin">Login</h1>
-		<div class="caja">
+		<div class="caja" id="caja" >
 			<h2>Email</h2>
 			<input  id="emails" type="email" name="email">
 			<br>
@@ -89,20 +89,21 @@
 			data: {
 				email: document.getElementById("emails").value, 
 				contrasena: document.getElementById("passwords").value
-			}
-		})
-		
-		.done(function(data, text, done)
-		{
-			var Authorization = localStorage.setItem('Authorization',data);
-			console.log(data);
-			console.log("llegando aqui");
-			window.open("http://localhost:8888/SitiosVisitados/ClienteWeb/usuarios.html");
-		})
+			},
+			success:function(response)
+			{
+				var response1 = jQuery.parseJSON(response);
+				var Authorization = localStorage.setItem('Authorization',response1.data);
 
-		.fail(function(msg){
-			alert("No existe este usuario");
-		});
+				
+				window.open("http://localhost:8888/SitiosVisitados/ClienteWeb/usuarios.html");
+			},
+			error:function(msg){
+				console.log(msg.responseText);
+				var response = jQuery.parseJSON(msg.responseText);
+				$('<div/>').html(response.message).appendTo('#caja');
+			}
+		})	
 	}
 </script>
 </html>
