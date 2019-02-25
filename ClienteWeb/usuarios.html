@@ -274,6 +274,7 @@
 			success: function(data, text, done){
 				var response = jQuery.parseJSON(data);
 				$('<div class="error"/>').html(response.message).appendTo('#cajaCrear');
+				allUsers();
 				console.log(data);
 			},
 			error: function(response){

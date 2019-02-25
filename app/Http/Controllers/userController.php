@@ -119,6 +119,10 @@ class userController extends Controller
     {
         if ($this->checkLogin()) 
         {   
+            // if(empty($_POST['newName']) && empty($_POST['newEmail']) && empty($_POST['newContrasena']))
+            // {
+            //     return $this->error(400, 'Rellene almenos un campo');
+            // }
             
             $usuarioSave = Usuario::where('id',$id)->first();
             
